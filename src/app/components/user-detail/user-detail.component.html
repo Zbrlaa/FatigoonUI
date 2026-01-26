@@ -1,44 +1,49 @@
 <div class="min-h-screen bg-[#313338] text-[#dbdee1] p-8" *ngIf="user">
-	<header class="max-w-5xl mx-auto mb-10">
-		<h1 class="text-4xl font-bold text-white mb-2">Profil de {{ user.displayName }}</h1>
-		<p class="text-[#b5bac1] font-medium">@{{ user.username }}</p>
-	</header>
+  <header class="max-w-6xl mx-auto mb-12 flex items-center bg-[#2b2d31] p-6 rounded-2xl border border-[#1e1f22] shadow-2xl">
+    <div class="w-20 h-20 rounded-full bg-[#5865f2] flex items-center justify-center text-white text-3xl font-bold mr-6 shadow-lg">
+      {{ user.displayName[0].toUpperCase() }}
+    </div>
+    <div>
+      <h1 class="text-3xl font-extrabold text-white leading-tight">{{ user.displayName }}</h1>
+      <p class="text-[#b5bac1] font-medium text-lg">@{{ user.username }}</p>
+    </div>
+  </header>
 
-	<main class="max-w-5xl mx-auto space-y-12">
-		<section *ngIf="ownerGuilds.length > 0">
-			<h2 class="text-[#f2930d] text-xs font-bold uppercase tracking-wider mb-4 flex items-center">
-				<span class="mr-2 text-xl">👑</span> Serveurs possédés — {{ ownerGuilds.length }}
-			</h2>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<div *ngFor="let guild of ownerGuilds" class="bg-[#2b2d31] p-4 rounded-lg flex items-center hover:bg-[#35373c] transition group cursor-pointer">
-					<div [style.background-color]="fatigoonService.getAvatarColor(guild.name)" 
-							class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-xl mr-4 shadow-lg group-hover:rounded-xl transition-all duration-300">
-						{{ fatigoonService.getInitials(guild.name) }}
-					</div>
-					<div class="truncate">
-						<div class="font-bold text-white truncate">{{ guild.name }}</div>
-						<div class="text-xs text-[#b5bac1]">{{ guild.memberCount || 0 }} membres</div>
-					</div>
-				</div>
-			</div>
-		</section>
+  <main class="max-w-6xl mx-auto space-y-16">
+    <section *ngIf="ownerGuilds.length > 0">
+      <h2 class="text-[#f2930d] text-xs font-bold uppercase tracking-[0.05em] mb-6 flex items-center">
+        <span class="mr-2 text-xl">👑</span> Serveurs possédés — {{ ownerGuilds.length }}
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div *ngFor="let guild of ownerGuilds" class="bg-[#2b2d31] p-4 rounded-xl flex items-center hover:bg-[#35373c] transition-all duration-200 group cursor-pointer border border-transparent hover:border-[#4e5058] shadow-md">
+          <div [style.background-color]="fatigoonService.getAvatarColor(guild.name)" 
+               class="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mr-4 shadow-inner group-hover:rounded-[1.2rem] transition-all">
+            {{ fatigoonService.getInitials(guild.name) }}
+          </div>
+          <div class="truncate">
+            <div class="font-bold text-white text-lg truncate">{{ guild.name }}</div>
+            <div class="text-sm text-[#b5bac1]">{{ guild.userIds?.length || 0 }} membres</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-		<section *ngIf="memberGuilds.length > 0">
-			<h2 class="text-[#5865f2] text-xs font-bold uppercase tracking-wider mb-4 flex items-center">
-				<span class="mr-2 text-xl">👥</span> Autres serveurs — {{ memberGuilds.length }}
-			</h2>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<div *ngFor="let guild of memberGuilds" class="bg-[#2b2d31] p-4 rounded-lg flex items-center hover:bg-[#35373c] transition group opacity-90 hover:opacity-100">
-					<div [style.background-color]="fatigoonService.getAvatarColor(guild.name)" 
-							class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4 group-hover:rounded-xl transition-all">
-						{{ fatigoonService.getInitials(guild.name) }}
-					</div>
-					<div class="truncate">
-						<div class="font-medium text-white truncate">{{ guild.name }}</div>
-						<div class="text-xs text-[#b5bac1]">{{ guild.memberCount || 0 }} membres</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	</main>
+    <section *ngIf="memberGuilds.length > 0">
+      <h2 class="text-[#5865f2] text-xs font-bold uppercase tracking-[0.05em] mb-6 flex items-center">
+        <span class="mr-2 text-xl">👥</span> Autres serveurs — {{ memberGuilds.length }}
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div *ngFor="let guild of memberGuilds" class="bg-[#2b2d31] p-4 rounded-xl flex items-center opacity-85 hover:opacity-100 hover:bg-[#35373c] transition-all duration-200 group border border-transparent hover:border-[#4e5058]">
+          <div [style.background-color]="fatigoonService.getAvatarColor(guild.name)" 
+               class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 group-hover:rounded-2xl transition-all">
+            {{ fatigoonService.getInitials(guild.name) }}
+          </div>
+          <div class="truncate">
+            <div class="font-semibold text-white truncate text-lg">{{ guild.name }}</div>
+            <div class="text-xs text-[#b5bac1]">{{ guild.userIds?.length || 0 }} membres</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
