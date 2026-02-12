@@ -1,20 +1,19 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { FatigoonService } from '../../services/fatigoon.service';
+import { FatigoonStore } from '../../store/fatigoon.store';
 
 @Component({
-	selector: 'app-home',
-	standalone: true,
-	imports: [FormsModule],
-	templateUrl: './home.component.html'
+  selector: 'app-home',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './home.component.html',
+//   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-	username = '';
-	constructor(private router: Router) {}
+  readonly store = inject(FatigoonStore);
+  private service = inject(FatigoonService);
 
-	search() {
-		if (this.username.trim()) {
-			this.router.navigate(['/user', this.username.trim()]);
-		}
-	}
+  getInitials(name?: string) { return this.service.getInitials(name); }
+  getBg(name?: string) { return this.service.getAvatarColor(name); }
 }
