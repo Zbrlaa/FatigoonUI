@@ -1,0 +1,49 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+  <div class="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-xl">
+    
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold mb-2">FatigoonUI</h1>
+      <p class="text-gray-400">Ravi de vous revoir !</p>
+    </div>
+
+    <form (submit)="onLogin(); $event.preventDefault()" class="space-y-6">
+      <div>
+        <label for="username" class="block text-xs font-bold uppercase text-gray-400 mb-2">
+          Nom d'utilisateur
+        </label>
+        <input
+          id="username"
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          class="w-full p-3 bg-gray-700 rounded border-none focus:ring-2 focus:ring-indigo-500 text-white outline-none transition-all"
+          placeholder="Entrez votre pseudo..."
+          required
+          [disabled]="store.isLoading()"
+        />
+      </div>
+
+      @if (store.error()) {
+        <div class="text-red-400 text-sm font-medium">
+            {{ store.error() }}
+        </div>
+      }
+
+      <button
+        type="submit"
+        [disabled]="store.isLoading() || !username().trim()"
+        class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 disabled:opacity-50 text-white font-bold rounded transition-colors flex justify-center items-center"
+      >
+        @if (store.isLoading()) {
+          <span class="animate-spin mr-2">◌</span> Connexion...
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-xs text-gray-500">
+      Besoin d'aide ? Contactez un administrateur Fatigoon.
+    </div>
+  </div>
+</div>

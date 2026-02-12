@@ -1,18 +1,30 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, computed } from '@angular/core';
 import { FatigoonService } from '../../services/fatigoon.service';
 import { FatigoonStore } from '../../store/fatigoon.store';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './home.component.html',
 //   styleUrl: './home.component.css'
 })
 export class HomeComponent {
   readonly store = inject(FatigoonStore);
   private service = inject(FatigoonService);
+
+  // Computed signals pour catégoriser les serveurs
+  readonly ownedGuilds$ = computed(() => {
+    const currentUser = this.store.currentUser();
+    if (!currentUser) return [];
+    return this.store.userGuilds().filter(g => g.ownerId === currentUser.id);
+  });
+
+  readonly joinedGuilds$ = computed(() => {
+    const currentUser = this.store.currentUser();
+    if (!currentUser) return [];
+    return this.store.userGuilds().filter(g => g.ownerId !== currentUser.id);
+  });
 
   getInitials(name?: string) { return this.service.getInitials(name); }
   getBg(name?: string) { return this.service.getAvatarColor(name); }

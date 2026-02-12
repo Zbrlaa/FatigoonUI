@@ -1,42 +1,119 @@
-<div class="p-6 max-w-7xl mx-auto space-y-8 text-white">
-  <header class="flex justify-between items-center">
-    <h1 class="text-3xl font-bold">Mes Serveurs</h1>
-    <span class="text-gray-400">Connecté en tant que **{{ store.currentUser()?.displayName }}**</span>
-  </header>
-
-  <section>
-    <h2 class="text-xl font-semibold mb-4 text-indigo-400">Serveurs que je possède</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      @for (guild of store.ownedGuilds(); track guild.id) {
-        <a [routerLink]="['/guild', guild.id]" class="bg-gray-800 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-700 transition cursor-pointer">
-          <div [style.background-color]="getBg(guild.name)" class="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl">
-            {{ getInitials(guild.name) }}
-          </div>
-          <div>
-            <div class="font-bold text-lg">{{ guild.name }}</div>
-            <div class="text-sm text-gray-400">{{ guild.userIds.length }} membres</div>
-          </div>
-        </a>
-      } @empty {
-        <p class="text-gray-500 italic">Aucun serveur possédé.</p>
-      }
+<div class="min-h-screen bg-[#313338] text-[#dbdee1] flex flex-col">
+  <nav class="h-20 bg-[#2b2d31] shadow-md flex items-center justify-between px-6 border-b border-[#1f2124]">
+    <div class="font-bold text-white flex items-center gap-2">
+      <span class="text-2xl text-[#949cf7]">@</span>
+      <span class="text-2xl">FatigoonUI</span>
     </div>
-  </section>
 
-  <section>
-    <h2 class="text-xl font-semibold mb-4 text-emerald-400">Serveurs rejoints</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      @for (guild of store.memberGuilds(); track guild.id) {
-        <div class="bg-gray-800 p-4 rounded-xl flex items-center gap-4 opacity-80">
-          <div [style.background-color]="getBg(guild.name)" class="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl">
-            {{ getInitials(guild.name) }}
+    @if (store.currentUser(); as user) {
+      <div class="flex items-center gap-5 p-3 px-5 hover:bg-[#35373c] rounded-lg cursor-pointer transition-colors">
+        <div class="text-right">
+          <div class="text-xl font-bold text-white leading-tight">
+            {{ user.displayName }}
           </div>
-          <div>
-            <div class="font-bold text-lg">{{ guild.name }}</div>
-            <div class="text-sm text-gray-400">Owner ID: {{ guild.ownerId }}</div>
+          <div class="text-sm text-[#b5bac1] leading-tight">
+            {{ user.username }}
+          </div>
+        </div>
+        <div class="w-12 h-12 bg-[#5865f2] rounded-full flex items-center justify-center text-white font-medium text-lg">
+          {{ user.displayName.substring(0, 1).toUpperCase() }}
+        </div>
+      </div>
+    }
+  </nav>
+
+  <main class="flex-1 overflow-y-auto" style="background: linear-gradient(135deg, #313338 0%, #2b2d31 100%);">
+    <div class="max-w-6xl mx-auto p-8">
+      <header class="mb-12">
+        <h1 class="text-4xl font-bold text-white mb-2">Tableau de bord</h1>
+      </header>
+
+      <!-- Serveurs possédés -->
+      @if (ownedGuilds$().length > 0) {
+        <div class="mb-12">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-1 h-6 bg-[#5865f2] rounded-full"></div>
+            <h2 class="text-2xl font-bold text-white">Vos serveurs</h2>
+            <span class="text-[#b5bac1] text-sm ml-2 bg-[#2b2d31] px-3 py-1 rounded-full">{{ ownedGuilds$().length }}</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (guild of ownedGuilds$(); track guild.id) {
+              <div class="group bg-[#2b2d31] rounded-xl border border-[#1f2124] hover:border-[#5865f2] transition-all duration-200 overflow-hidden hover:shadow-lg hover:shadow-[#5865f2]/20 cursor-pointer">
+                <div class="h-2 bg-gradient-to-r from-[#5865f2] to-[#7289da] group-hover:to-[#949cf7]"></div>
+                <div class="p-5">
+                  <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                      <h3 class="font-bold text-lg text-white group-hover:text-[#5865f2] transition-colors">{{ guild.name }}</h3>
+                      <p class="text-xs text-[#949cf7] font-semibold mt-1">👑 Propriétaire</p>
+                    </div>
+                    <div class="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-[#5865f2] to-[#4752c4] text-white font-bold text-sm group-hover:shadow-lg group-hover:shadow-[#5865f2]/50 transition-shadow">
+                      {{ guild.name.substring(0, 1).toUpperCase() }}
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-[11px] text-[#949cf7]">ID serveur</p>
+                    <p class="text-xs text-[#b5bac1] font-mono bg-[#1f2124] px-2 py-1 rounded break-all">{{ guild.id }}</p>
+                  </div>
+                  <div class="mt-4 pt-4 border-t border-[#42454a]">
+                    <p class="text-xs text-[#b5bac1]">{{ guild.userIds.length }} membre(s)</p>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
         </div>
       }
+
+      <!-- Serveurs rejoints -->
+      @if (joinedGuilds$().length > 0) {
+        <div class="mb-12">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-1 h-6 bg-[#43b581] rounded-full"></div>
+            <h2 class="text-2xl font-bold text-white">Serveurs rejoints</h2>
+            <span class="text-[#b5bac1] text-sm ml-2 bg-[#2b2d31] px-3 py-1 rounded-full">{{ joinedGuilds$().length }}</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (guild of joinedGuilds$(); track guild.id) {
+              <div class="group bg-[#2b2d31] rounded-xl border border-[#1f2124] hover:border-[#43b581] transition-all duration-200 overflow-hidden hover:shadow-lg hover:shadow-[#43b581]/20 cursor-pointer">
+                <div class="h-2 bg-gradient-to-r from-[#43b581] to-[#5fd0a0] group-hover:to-[#7dd2b0]"></div>
+                <div class="p-5">
+                  <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                      <h3 class="font-bold text-lg text-white group-hover:text-[#43b581] transition-colors">{{ guild.name }}</h3>
+                      <p class="text-xs text-[#43b581] font-semibold mt-1">✓ Membre</p>
+                    </div>
+                    <div class="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-[#43b581] to-[#388c6e] text-white font-bold text-sm group-hover:shadow-lg group-hover:shadow-[#43b581]/50 transition-shadow">
+                      {{ guild.name.substring(0, 1).toUpperCase() }}
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div>
+                      <p class="text-[11px] text-[#949cf7] mb-1">Propriétaire</p>
+                      <p class="text-xs text-[#b5bac1] font-mono bg-[#1f2124] px-2 py-1 rounded break-all">{{ guild.ownerId }}</p>
+                    </div>
+                    <div>
+                      <p class="text-[11px] text-[#949cf7] mb-1">ID serveur</p>
+                      <p class="text-xs text-[#b5bac1] font-mono bg-[#1f2124] px-2 py-1 rounded break-all">{{ guild.id }}</p>
+                    </div>
+                  </div>
+                  <div class="mt-4 pt-4 border-t border-[#42454a]">
+                    <p class="text-xs text-[#b5bac1]">{{ guild.userIds.length }} membre(s)</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (ownedGuilds$().length === 0 && joinedGuilds$().length === 0) {
+        <div class="flex flex-col items-center justify-center py-24">
+          <div class="text-6xl mb-4">🎮</div>
+          <h3 class="text-2xl font-bold text-white mb-2">Aucun serveur trouvé</h3>
+          <p class="text-[#b5bac1]">Créez ou rejoignez un serveur pour commencer</p>
+        </div>
+      }
     </div>
-  </section>
+  </main>
 </div>

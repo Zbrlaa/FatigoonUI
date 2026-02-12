@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FatigoonStore } from '../../store/fatigoon.store';
@@ -16,11 +16,18 @@ export class LoginComponent {
 
   username = signal('');
 
+  constructor() {
+    effect(() => {
+      if (this.store.currentUser()) {
+        this.router.navigate(['/']);
+      }
+    });
+  }
+
   onLogin(): void {
     const value = this.username().trim();
     if (value) {
       this.store.login(value);
-      this.router.navigate(['/']);
     }
   }
 }
