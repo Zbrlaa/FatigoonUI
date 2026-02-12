@@ -6,17 +6,21 @@
     </div>
 
     @if (store.currentUser(); as user) {
-      <div class="flex items-center gap-5 p-3 px-5 hover:bg-[#35373c] rounded-lg cursor-pointer transition-colors">
-        <div class="text-right">
-          <div class="text-xl font-bold text-white leading-tight">
-            {{ user.displayName }}
+      <div class="flex items-center gap-2">
+        <button (click)="goToPrint()" class="py-2 px-3 bg-[#3b3e42] hover:bg-[#494c50] text-[#dbdee1] rounded-md font-semibold">Imprimer</button>
+
+        <div class="flex items-center gap-5 p-3 px-5 hover:bg-[#35373c] rounded-lg cursor-pointer transition-colors">
+          <div class="text-right">
+            <div class="text-xl font-bold text-white leading-tight">
+              {{ user.displayName }}
+            </div>
+            <div class="text-sm text-[#b5bac1] leading-tight">
+              {{ user.username }}
+            </div>
           </div>
-          <div class="text-sm text-[#b5bac1] leading-tight">
-            {{ user.username }}
+          <div class="w-12 h-12 bg-[#5865f2] rounded-full flex items-center justify-center text-white font-medium text-lg">
+            {{ user.displayName.substring(0, 1).toUpperCase() }}
           </div>
-        </div>
-        <div class="w-12 h-12 bg-[#5865f2] rounded-full flex items-center justify-center text-white font-medium text-lg">
-          {{ user.displayName.substring(0, 1).toUpperCase() }}
         </div>
       </div>
     }

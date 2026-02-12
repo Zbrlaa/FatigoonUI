@@ -1,4 +1,5 @@
 import { Component, inject, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { FatigoonService } from '../../services/fatigoon.service';
 import { FatigoonStore } from '../../store/fatigoon.store';
 
@@ -12,6 +13,7 @@ import { FatigoonStore } from '../../store/fatigoon.store';
 export class HomeComponent {
   readonly store = inject(FatigoonStore);
   private service = inject(FatigoonService);
+  private router = inject(Router);
 
   // Computed signals pour catégoriser les serveurs
   readonly ownedGuilds$ = computed(() => {
@@ -28,4 +30,6 @@ export class HomeComponent {
 
   getInitials(name?: string) { return this.service.getInitials(name); }
   getBg(name?: string) { return this.service.getAvatarColor(name); }
+
+  goToPrint() { this.router.navigateByUrl('/print'); }
 }
