@@ -32,4 +32,8 @@ export class HomeComponent {
   getBg(name?: string) { return this.service.getAvatarColor(name); }
 
   goToPrint() { this.router.navigateByUrl('/print'); }
+
+  goToGuildDetails(guildId: string) { 
+    this.router.navigate(['/guild', guildId]); 
+  }
 }

@@ -30,6 +30,10 @@ export class FatigoonService {
     return this.http.get<Invitation[]>(`${this.apiUrl}/invitations`);
   }
 
+  getInvitationById(id: number): Observable<Invitation> {
+    return this.http.get<Invitation>(`${this.apiUrl}/invitations/${id}`);
+  }
+
   createInvitation(guildId: string, discordCode: string): Observable<Invitation> {
     return this.http.post<Invitation>(`${this.apiUrl}/invitations`, { guildId, discordCode });
   }
@@ -49,6 +53,10 @@ export class FatigoonService {
   // --- Roles ---
   getRoles(): Observable<Role[]> {
     return this.http.get<Role[]>(`${this.apiUrl}/roles`);
+  }
+
+  getRoleById(roleId: string): Observable<Role> {
+    return this.http.get<Role>(`${this.apiUrl}/roles/${roleId}`);
   }
 
   // Utilitaires

@@ -1,0 +1,201 @@
+<div class="min-h-screen bg-[#313338] text-[#dbdee1]">
+  <!-- Header -->
+  <nav class="h-20 bg-[#2b2d31] shadow-md flex items-center justify-between px-6 border-b border-[#1f2124]">
+    <div class="flex items-center gap-4">
+      <button 
+        (click)="goBack()" 
+        class="p-2 hover:bg-[#404249] rounded-lg transition-colors text-[#b5bac1] hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+      </button>
+      <div class="font-bold text-white flex items-center gap-2">
+        <span class="text-2xl text-[#949cf7]">⚙️</span>
+        <span class="text-2xl">Gestion du serveur</span>
+      </div>
+    </div>
+
+    @if (store.currentUser(); as user) {
+      <div class="flex items-center gap-3 p-3 px-5 hover:bg-[#35373c] rounded-lg cursor-pointer transition-colors">
+        <div class="text-right">
+          <div class="text-lg font-bold text-white leading-tight">{{ user.displayName }}</div>
+          <div class="text-xs text-[#b5bac1] leading-tight">{{ user.username }}</div>
+        </div>
+        <div 
+          class="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
+          [style.background]="getAvatarColor(user.displayName)">
+          {{ getInitials(user.displayName) }}
+        </div>
+      </div>
+    }
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto p-8">
+    @if (store.selectedGuildLoading()) {
+      <div class="flex items-center justify-center py-20">
+        <div class="text-center">
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#5865f2] border-t-transparent mb-4"></div>
+          <p class="text-[#b5bac1]">Chargement...</p>
+        </div>
+      </div>
+    } @else if (store.selectedGuildError()) {
+      <div class="bg-[#f23f42]/10 border border-[#f23f42] rounded-xl p-8 text-center">
+        <div class="text-5xl mb-4">⛔</div>
+        <h3 class="text-xl font-bold text-[#f23f42] mb-2">{{ store.selectedGuildError() }}</h3>
+        <button 
+          (click)="goBack()" 
+          class="mt-4 px-6 py-2 bg-[#5865f2] hover:bg-[#4752c4] text-white rounded-md font-semibold transition-colors">
+          Retour au tableau de bord
+        </button>
+      </div>
+    } @else if (store.selectedGuild(); as currentGuild) {
+      <!-- Informations du serveur -->
+      <div class="mb-8">
+        <div class="bg-[#2b2d31] rounded-xl border border-[#1f2124] overflow-hidden">
+          <div class="h-3 bg-gradient-to-r from-[#5865f2] to-[#7289da]"></div>
+          <div class="p-8">
+            <div class="flex items-start gap-6">
+              <div 
+                class="w-24 h-24 rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-xl"
+                [style.background]="getAvatarColor(currentGuild.name)">
+                {{ currentGuild.name.substring(0, 1).toUpperCase() }}
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <h1 class="text-3xl font-bold text-white">{{ currentGuild.name }}</h1>
+                  <span class="bg-[#5865f2] text-white text-xs font-bold px-3 py-1 rounded-full">👑 PROPRIÉTAIRE</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  <div>
+                    <p class="text-xs text-[#949cf7] mb-1">ID du serveur</p>
+                    <p class="text-sm text-[#b5bac1] font-mono bg-[#1f2124] px-3 py-2 rounded">{{ currentGuild.id }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-[#949cf7] mb-1">ID du propriétaire</p>
+                    <p class="text-sm text-[#b5bac1] font-mono bg-[#1f2124] px-3 py-2 rounded">{{ currentGuild.ownerId }}</p>
+                  </div>
+                </div>
+                <div class="flex gap-6 mt-6">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">👥</span>
+                    <div>
+                      <p class="text-2xl font-bold text-white">{{ store.selectedGuildMembers().length }}</p>
+                      <p class="text-xs text-[#b5bac1]">Membres</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">🎭</span>
+                    <div>
+                      <p class="text-2xl font-bold text-white">{{ store.selectedGuildRoles().length }}</p>
+                      <p class="text-xs text-[#b5bac1]">Rôles</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">🎫</span>
+                    <div>
+                      <p class="text-2xl font-bold text-white">{{ store.selectedGuildInvitations().length }}</p>
+                      <p class="text-xs text-[#b5bac1]">Invitations</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste des membres -->
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-1 h-6 bg-[#5865f2] rounded-full"></div>
+          <h2 class="text-2xl font-bold text-white">Membres</h2>
+          <span class="text-[#b5bac1] text-sm bg-[#2b2d31] px-3 py-1 rounded-full">{{ store.selectedGuildMembers().length }}</span>
+        </div>
+        
+        @if (store.selectedGuildMembers().length > 0) {
+          <div class="bg-[#2b2d31] rounded-xl border border-[#1f2124] overflow-hidden">
+            <div class="divide-y divide-[#1f2124]">
+              @for (member of store.selectedGuildMembers(); track member.id) {
+                <div class="p-4 hover:bg-[#35373c] transition-colors flex items-center gap-4">
+                  <div 
+                    class="w-12 h-12 rounded-full flex items-center justify-center text-white font-medium flex-shrink-0"
+                    [style.background]="getAvatarColor(member.displayName)">
+                    {{ getInitials(member.displayName) }}
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-bold text-white">{{ member.displayName }}</p>
+                    <p class="text-sm text-[#b5bac1]">{{ member.username }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs text-[#949cf7] font-mono">ID: {{ member.id }}</p>
+                    @if (member.id === currentGuild.ownerId) {
+                      <span class="text-xs bg-[#5865f2] text-white px-2 py-1 rounded mt-1 inline-block">👑 Propriétaire</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="bg-[#2b2d31] rounded-xl border border-[#1f2124] p-8 text-center">
+            <p class="text-[#b5bac1]">Aucun membre pour le moment</p>
+          </div>
+        }
+      </div>
+
+      <!-- Tableau des invitations -->
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-1 h-6 bg-[#43b581] rounded-full"></div>
+          <h2 class="text-2xl font-bold text-white">Invitations</h2>
+          <span class="text-[#b5bac1] text-sm bg-[#2b2d31] px-3 py-1 rounded-full">{{ store.selectedGuildInvitations().length }}</span>
+        </div>
+        
+        @if (store.selectedGuildInvitationsWithRoles().length > 0) {
+          <div class="bg-[#2b2d31] rounded-xl border border-[#1f2124] overflow-hidden overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-[#1f2124]">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-[#949cf7] uppercase tracking-wider">ID</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-[#949cf7] uppercase tracking-wider">Code Discord</th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-[#949cf7] uppercase tracking-wider">Rôles</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#1f2124]">
+                @for (invitation of store.selectedGuildInvitationsWithRoles(); track invitation.id) {
+                  <tr class="hover:bg-[#35373c] transition-colors">
+                    <td class="px-6 py-4">
+                      <span class="text-sm font-mono text-[#b5bac1] bg-[#1f2124] px-2 py-1 rounded">{{ invitation.id }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="text-sm font-mono text-white bg-[#5865f2]/20 border border-[#5865f2] px-3 py-1 rounded">{{ invitation.discordCode }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                      @if (invitation.roles.length > 0) {
+                        <div class="flex flex-wrap gap-2">
+                          @for (role of invitation.roles; track role.id) {
+                            <span class="text-xs bg-[#43b581] text-white px-3 py-1 rounded-full font-medium">
+                              {{ role.name }}
+                            </span>
+                          }
+                        </div>
+                      } @else {
+                        <span class="text-sm text-[#72767d] italic">Aucun rôle</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="bg-[#2b2d31] rounded-xl border border-[#1f2124] p-8 text-center">
+            <div class="text-4xl mb-3">🎫</div>
+            <p class="text-[#b5bac1]">Aucune invitation pour le moment</p>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

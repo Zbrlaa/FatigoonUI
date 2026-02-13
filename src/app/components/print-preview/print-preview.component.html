@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-[#36393f]">
+  <!-- Toolbar -->
+  <div class="flex justify-between items-center px-6 py-4 bg-[#2f3136] shadow-xl border-b-2 border-[#202225]">
+    <div class="flex gap-3">
+      <button (click)="goBack()" class="flex items-center gap-2 px-5 py-2.5 bg-[#202225] hover:bg-[#2f3136] text-gray-300 rounded font-semibold transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Retour
+      </button>
+    </div>
+    
+    <div class="flex gap-3">
+      <button (click)="toggleSettings()" 
+        [ngClass]="showSettings() ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-300'"
+        class="flex items-center gap-2 px-5 py-2.5 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Paramètres
+      </button>
+      <button (click)="handlePrint($event)" printSectionId="printSection" ngxPrint [useExistingCss]="true" class="flex items-center gap-2 px-5 py-2.5 bg-[#5865f2] hover:bg-[#4752c4] text-white rounded font-semibold transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+        </svg>
+        Imprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Panneau de paramètres -->
+  <div class="overflow-hidden transition-all duration-400 bg-[#2f3136] shadow-md"
+    [ngClass]="showSettings() ? 'max-h-[500px] py-8 px-6 border-b-2 border-[#202225]' : 'max-h-0'">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Orientation -->
+      <div class="flex flex-col gap-4">
+        <label class="flex items-center gap-2 text-gray-300 font-bold text-base">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+          </svg>
+          Orientation
+        </label>
+        <div class="flex gap-2">
+          <button 
+            (click)="setOrientation('portrait')" 
+            [ngClass]="orientation() === 'portrait' ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-400'"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+            Portrait
+          </button>
+          <button 
+            (click)="setOrientation('landscape')" 
+            [ngClass]="orientation() === 'landscape' ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-400'"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+            Paysage
+          </button>
+        </div>
+      </div>
+
+      <!-- Taille de page -->
+      <div class="flex flex-col gap-4">
+        <label class="flex items-center gap-2 text-gray-300 font-bold text-base">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          </svg>
+          Taille de page
+        </label>
+        <div class="flex gap-2">
+          <button 
+            (click)="setPageSize('A4')" 
+            [ngClass]="pageSize() === 'A4' ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-400'"
+            class="flex-1 px-4 py-3 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+            A4
+          </button>
+          <button 
+            (click)="setPageSize('A3')" 
+            [ngClass]="pageSize() === 'A3' ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-400'"
+            class="flex-1 px-4 py-3 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+            A3
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode couleur -->
+      <div class="flex flex-col gap-4">
+        <label class="flex items-center gap-2 text-gray-300 font-bold text-base">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd"/>
+          </svg>
+          Couleur
+        </label>
+        <div class="flex gap-2">
+          <button 
+            (click)="setColorMode('color')" 
+            [ngClass]="colorMode() === 'color' ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-400'"
+            class="flex-1 px-4 py-3 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+            Couleur
+          </button>
+          <button 
+            (click)="setColorMode('bw')" 
+            [ngClass]="colorMode() === 'bw' ? 'bg-[#5865f2] text-white' : 'bg-[#202225] text-gray-400'"
+            class="flex-1 px-4 py-3 rounded font-semibold transition-colors hover:bg-[#4752c4]">
+            Noir et blanc
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu de la page à imprimer -->
+  <div id="printSection" class="max-w-7xl mx-auto my-8 bg-white rounded shadow-xl overflow-hidden" [ngClass]="getPageClass()">
+    <!-- En-tête -->
+    <header class="px-12 pt-10 print-header">
+      <div class="flex justify-between items-start mb-6">
+        <div class="flex-1">
+          <h1 class="text-4xl font-bold mb-2"
+              [ngClass]="colorMode() === 'color' ? 'text-[#5865f2]' : 'text-black'">
+            Programme TV
+          </h1>
+          <p class="text-lg text-gray-600 font-medium">Diagramme de Gantt - Semaine du {{getCurrentWeek()}}</p>
+        </div>
+        <div class="flex items-center">
+          <div class="w-16 h-16 rounded flex items-center justify-center text-white shadow-lg"
+               [ngClass]="colorMode() === 'color' ? 'bg-[#5865f2]' : 'bg-gray-800'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-10 h-10">
+              <path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-.71.71L10.59 6H3c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.9-2-2-2zm0 14H3V8h18v12zM9 10v8l7-4z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="h-1 rounded-full"
+           [ngClass]="colorMode() === 'color' ? 'bg-[#5865f2]' : 'bg-gray-800'"></div>
+    </header>
+
+    <!-- Diagramme Gantt -->
+    <div class="px-12 py-8" [ngClass]="colorMode() === 'bw' ? 'grayscale' : ''">
+      <app-gantt-tv [shows]="shows" [channels]="channels"></app-gantt-tv>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="px-12 py-6 border-t-2 border-gray-200 bg-gray-50">
+      <div class="flex justify-between items-center">
+        <p class="text-sm text-gray-600 italic">Document généré automatiquement</p>
+        <p class="text-sm text-gray-800 font-semibold">{{currentDate}}</p>
+      </div>
+    </footer>
+  </div>
+</div>
