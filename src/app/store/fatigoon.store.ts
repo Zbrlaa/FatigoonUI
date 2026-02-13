@@ -23,6 +23,8 @@ export const FatigoonStore = signalStore(
     selectedGuildRoles: [] as Role[],
     selectedGuildLoading: false,
     selectedGuildError: null as string | null,
+    generatingInvitation: false,
+    generateInvitationError: null as string | null,
   }),
 
   withComputed(({ currentUser, userGuilds, selectedGuild, selectedGuildInvitations, selectedGuildRoles }) => ({
@@ -160,6 +162,105 @@ export const FatigoonStore = signalStore(
         selectedGuildLoading: false,
         selectedGuildError: null,
       });
+    },
+
+    deleteInvitation: rxMethod<number>(
+      pipe(
+        switchMap(invitationId =>
+          service.deleteInvitation(invitationId).pipe(
+            tapResponse({
+              next: () => {
+                const updatedInvitations = store.selectedGuildInvitations().filter(inv => inv.id !== invitationId);
+                patchState(store, { selectedGuildInvitations: updatedInvitations });
+              },
+              error: (err) => {
+                console.error(err);
+                patchState(store, {
+                  selectedGuildError: 'Erreur lors de la suppression de l\'invitation',
+                });
+              },
+            })
+          )
+        )
+      )
+    ),
+
+    addRoleToInvitation: rxMethod<{ invitationId: number; roleId: string }>(
+      pipe(
+        switchMap(({ invitationId, roleId }) =>
+          service.addRoleToInvitation(invitationId, roleId).pipe(
+            tapResponse({
+              next: (updatedInvitation) => {
+                const updatedInvitations = store.selectedGuildInvitations().map(inv =>
+                  inv.id === invitationId ? updatedInvitation : inv
+                );
+                patchState(store, { selectedGuildInvitations: updatedInvitations });
+              },
+              error: (err) => {
+                console.error(err);
+                patchState(store, {
+                  selectedGuildError: 'Erreur lors de l\'ajout du rôle',
+                });
+              },
+            })
+          )
+        )
+      )
+    ),
+
+    removeRoleFromInvitation: rxMethod<{ invitationId: number; roleId: string }>(
+      pipe(
+        switchMap(({ invitationId, roleId }) =>
+          service.removeRoleFromInvitation(invitationId, roleId).pipe(
+            tapResponse({
+              next: (updatedInvitation) => {
+                const updatedInvitations = store.selectedGuildInvitations().map(inv =>
+                  inv.id === invitationId ? updatedInvitation : inv
+                );
+                patchState(store, { selectedGuildInvitations: updatedInvitations });
+              },
+              error: (err) => {
+                console.error(err);
+                patchState(store, {
+                  selectedGuildError: 'Erreur lors de la suppression du rôle',
+                });
+              },
+            })
+          )
+        )
+      )
+    ),
+
+    generateInvitation: rxMethod<string>(
+      pipe(
+        tap(() =>
+          patchState(store, { generatingInvitation: true, generateInvitationError: null })
+        ),
+        switchMap(guildId =>
+          service.generateInvitation(guildId).pipe(
+            tapResponse({
+              next: (newInvitation) => {
+                const updatedInvitations = [...store.selectedGuildInvitations(), newInvitation];
+                patchState(store, { 
+                  selectedGuildInvitations: updatedInvitations,
+                  generatingInvitation: false,
+                });
+              },
+              error: (err) => {
+                console.error(err);
+                patchState(store, {
+                  generateInvitationError: 'Erreur lors de la génération de l\'invitation',
+                  generatingInvitation: false,
+                });
+              },
+            })
+          )
+        )
+      )
+    ),
+
+    clearGenerateInvitationError: () => {
+      patchState(store, { generateInvitationError: null });
     },
   }))
 );

@@ -3,6 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FatigoonService } from '../../services/fatigoon.service';
 import { FatigoonStore } from '../../store/fatigoon.store';
+import { Role } from '../../models/role.model';
+import { computed } from '@angular/core';
 
 @Component({
   selector: 'app-guild-details',
@@ -18,6 +20,10 @@ export class GuildDetailsComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
+  // Affichage du sélecteur de rôles par invitation
+  expandedInvitation = new Map<number, boolean>();
+  showRoleSelector = new Map<number, boolean>();
+
   constructor() {
     // Effect pour charger les détails du serveur quand la route change
     effect(() => {
@@ -31,6 +37,58 @@ export class GuildDetailsComponent {
     this.destroyRef.onDestroy(() => {
       this.store.clearSelectedGuild();
     });
+  }
+
+  getAvailableRolesForInvitation(invitationId: number): Role[] {
+    const invitation = this.store.selectedGuildInvitations().find(inv => inv.id === invitationId);
+    if (!invitation) return [];
+    
+    return this.store.selectedGuildRoles().filter(role => !invitation.roleIds.includes(role.id));
+  }
+
+  getInvitationRoles(invitationId: number): Role[] {
+    const invitation = this.store.selectedGuildInvitations().find(inv => inv.id === invitationId);
+    if (!invitation) return [];
+    
+    return this.store.selectedGuildRoles().filter(role => invitation.roleIds.includes(role.id));
+  }
+
+  deleteInvitation(invitationId: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette invitation ?')) {
+      this.store.deleteInvitation(invitationId);
+    }
+  }
+
+  addRoleToInvitation(invitationId: number, roleId: string): void {
+    this.store.addRoleToInvitation({ invitationId, roleId });
+    this.showRoleSelector.set(invitationId, false);
+  }
+
+  removeRoleFromInvitation(invitationId: number, roleId: string): void {
+    this.store.removeRoleFromInvitation({ invitationId, roleId });
+  }
+
+  toggleRoleSelector(invitationId: number): void {
+    this.showRoleSelector.set(invitationId, !this.showRoleSelector.get(invitationId));
+  }
+
+  toggleExpanded(invitationId: number): void {
+    this.expandedInvitation.set(invitationId, !this.expandedInvitation.get(invitationId));
+  }
+
+  isExpanded(invitationId: number): boolean {
+    return this.expandedInvitation.get(invitationId) ?? false;
+  }
+
+  generateInvitation(): void {
+    const guildId = this.store.selectedGuild()?.id;
+    if (guildId) {
+      this.store.generateInvitation(guildId);
+    }
+  }
+
+  clearGenerateError(): void {
+    this.store.clearGenerateInvitationError();
   }
 
   goBack(): void {

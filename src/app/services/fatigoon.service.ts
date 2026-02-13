@@ -38,6 +38,10 @@ export class FatigoonService {
     return this.http.post<Invitation>(`${this.apiUrl}/invitations`, { guildId, discordCode });
   }
 
+  generateInvitation(guildId: string): Observable<Invitation> {
+    return this.http.post<Invitation>(`${this.apiUrl}/invitations/generate/${guildId}`, {});
+  }
+
   deleteInvitation(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/invitations/${id}`);
   }
