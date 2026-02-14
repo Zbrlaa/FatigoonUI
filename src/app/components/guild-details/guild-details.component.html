@@ -16,13 +16,13 @@
     </div>
 
     @if (store.currentUser(); as user) {
-      <div class="flex items-center gap-3 p-3 px-5 hover:bg-[#35373c] rounded-lg cursor-pointer transition-colors">
+      <div class="flex items-center gap-5 p-3 px-5 hover:bg-[#35373c] rounded-lg cursor-pointer transition-colors">
         <div class="text-right">
-          <div class="text-lg font-bold text-white leading-tight">{{ user.displayName }}</div>
-          <div class="text-xs text-[#b5bac1] leading-tight">{{ user.username }}</div>
+          <div class="text-xl font-bold text-white leading-tight">{{ user.displayName }}</div>
+          <div class="text-sm text-[#b5bac1] leading-tight">{{ user.username }}</div>
         </div>
         <div 
-          class="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
+          class="w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg"
           [style.background]="getAvatarColor(user.displayName)">
           {{ getInitials(user.displayName) }}
         </div>

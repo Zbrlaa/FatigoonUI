@@ -18,8 +18,10 @@
               {{ user.username }}
             </div>
           </div>
-          <div class="w-12 h-12 bg-[#5865f2] rounded-full flex items-center justify-center text-white font-medium text-lg">
-            {{ user.displayName.substring(0, 1).toUpperCase() }}
+          <div 
+            class="w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg"
+            [style.background]="getBg(user.displayName)">
+            {{ getInitials(user.displayName) }}
           </div>
         </div>
       </div>

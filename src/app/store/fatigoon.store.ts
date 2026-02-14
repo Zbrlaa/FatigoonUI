@@ -63,10 +63,11 @@ export const FatigoonStore = signalStore(
           service.getUserByUsername(username).pipe(
 
             switchMap(user => {
-              const allIds = [
+              // Dédupliquer les IDs car l'owner peut être dans la liste des membres
+              const allIds = [...new Set([
                 ...(user.guildIds ?? []),
                 ...(user.ownedGuildIds ?? []),
-              ];
+              ])];
 
               if (allIds.length === 0) {
                 return of({ user, guilds: [] });
