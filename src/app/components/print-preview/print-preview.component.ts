@@ -1,10 +1,8 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PrintService } from '../../services/print.service';
-import { ElectronService } from '../../services/electron.service';
-import { GanttTvComponent } from '../gantt-tv/gantt-tv.component';
-import { NgxPrintModule } from 'ngx-print';
+import { ElectronService, Printer } from '../../services/electron.service';
 
 export type PageOrientation = 'portrait' | 'landscape';
 export type PageSize = 'A4' | 'A3';
@@ -13,22 +11,24 @@ export type ColorMode = 'color' | 'bw';
 @Component({
   selector: 'app-print-preview',
   standalone: true,
-  imports: [CommonModule, GanttTvComponent, NgxPrintModule],
+  imports: [CommonModule],
   templateUrl: './print-preview.component.html',
   styleUrls: ['./print-preview.component.css']
 })
-export class PrintPreviewComponent implements OnInit {
+export class PrintPreviewComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private printService = inject(PrintService);
   private electronService = inject(ElectronService);
 
-  shows = this.printService.getShows();
-  channels = this.printService.getChannels();
+  ganttImage = signal<string | null>(null);
+  printers = signal<Printer[]>([]);
+  selectedPrinter = signal<string | null>(null);
 
   // Options d'impression
   orientation = signal<PageOrientation>('landscape');
   pageSize = signal<PageSize>('A4');
   colorMode = signal<ColorMode>('color');
+  showBorder = signal<boolean>(true);
   showSettings = signal(false);
   currentDate = new Date().toLocaleDateString('fr-FR', {
     weekday: 'long',
@@ -45,7 +45,42 @@ export class PrintPreviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Charger l'image depuis le service
+    const image = this.printService.getGanttImage();
+    if (!image) {
+      console.error('Aucune image disponible pour l\'impression');
+      this.router.navigate(['/print']);
+      return;
+    }
+    this.ganttImage.set(image);
     this.updatePrintStyle();
+    
+    // Charger les imprimantes disponibles
+    this.loadPrinters();
+  }
+
+  /**
+   * Charge la liste des imprimantes disponibles
+   */
+  async loadPrinters() {
+    if (!this.electronService.isElectron()) {
+      return;
+    }
+    
+    const printers = await this.electronService.getPrinters();
+    this.printers.set(printers);
+    
+    // Sélectionner l'imprimante par défaut
+    const defaultPrinter = printers.find(p => p.isDefault);
+    if (defaultPrinter) {
+      this.selectedPrinter.set(defaultPrinter.name);
+    } else if (printers.length > 0) {
+      this.selectedPrinter.set(printers[0].name);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.printService.clearData();
   }
 
   /**
@@ -115,6 +150,13 @@ export class PrintPreviewComponent implements OnInit {
   }
 
   /**
+   * Bascule l'affichage de la bordure
+   */
+  toggleBorder() {
+    this.showBorder.set(!this.showBorder());
+  }
+
+  /**
    * Retourne la classe CSS pour l'orientation et la taille
    */
   getPageClass(): string {
@@ -122,31 +164,91 @@ export class PrintPreviewComponent implements OnInit {
   }
 
   /**
-   * Gère l'impression via Electron (silencieux) ou navigateur (fallback ngx-print)
+   * Gère l'impression via Electron uniquement
    */
-  async handlePrint(event?: Event) {
-    if (this.electronService.isElectron()) {
-      // Empêcher ngx-print de se déclencher
-      event?.preventDefault();
-      
-      // Impression silencieuse via Electron
-      const result = await this.electronService.printToPDF({
-        pageSize: this.pageSize(),
-        orientation: this.orientation(),
-        marginsType: 1, // 1 = marges minimales
-        printBackground: this.colorMode() === 'color',
-        printSelectionOnly: false
-      });
-
-      if (result.success) {
-        console.log('PDF enregistré:', result.filePath);
-        alert(`PDF enregistré avec succès: ${result.filePath}`);
-      } else {
-        console.error('Erreur impression:', result.error);
-        alert(`Erreur lors de l'impression: ${result.error}`);
-      }
+  async handlePrint() {
+    if (!this.electronService.isElectron()) {
+      alert('L\'impression n\'est disponible que dans l\'application Electron');
+      return;
     }
-    // Sinon, laisser ngx-print gérer l'impression (ne rien faire)
+
+    if (!this.selectedPrinter()) {
+      alert('Veuillez sélectionner une imprimante');
+      return;
+    }
+
+    // Masquer les boutons de paramètres avant l'impression
+    const toolbar = document.querySelector('.toolbar-no-print');
+    const settingsPanel = document.querySelector('.settings-no-print');
+    
+    if (toolbar) (toolbar as HTMLElement).style.display = 'none';
+    if (settingsPanel) (settingsPanel as HTMLElement).style.display = 'none';
+
+    // Attendre que le DOM soit mis à jour
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Lancer l'impression silencieuse via Electron
+    const result = await this.electronService.printSilent({
+      pageSize: this.pageSize(),
+      orientation: this.orientation(),
+      marginsType: 0,
+      printBackground: this.colorMode() === 'color',
+      printSelectionOnly: false,
+      printerName: this.selectedPrinter()!
+    });
+
+    // Réafficher les boutons
+    if (toolbar) (toolbar as HTMLElement).style.display = '';
+    if (settingsPanel) (settingsPanel as HTMLElement).style.display = '';
+
+    if (result.success) {
+      console.log('Impression réussie');
+      alert('Impression lancée avec succès !');
+    } else {
+      console.error('Erreur impression:', result.error);
+      alert(`Erreur lors de l'impression: ${result.error}`);
+    }
+  }
+
+  /**
+   * Enregistre le document en PDF
+   */
+  async handleSavePDF() {
+    if (!this.electronService.isElectron()) {
+      alert('L\'enregistrement PDF n\'est disponible que dans l\'application Electron');
+      return;
+    }
+
+    // Masquer les boutons de paramètres avant l'impression
+    const toolbar = document.querySelector('.toolbar-no-print');
+    const settingsPanel = document.querySelector('.settings-no-print');
+    
+    if (toolbar) (toolbar as HTMLElement).style.display = 'none';
+    if (settingsPanel) (settingsPanel as HTMLElement).style.display = 'none';
+
+    // Attendre que le DOM soit mis à jour
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Enregistrer en PDF via Electron
+    const result = await this.electronService.printToPDF({
+      pageSize: this.pageSize(),
+      orientation: this.orientation(),
+      marginsType: 0,
+      printBackground: this.colorMode() === 'color',
+      printSelectionOnly: false
+    });
+
+    // Réafficher les boutons
+    if (toolbar) (toolbar as HTMLElement).style.display = '';
+    if (settingsPanel) (settingsPanel as HTMLElement).style.display = '';
+
+    if (result.success && result.filePath) {
+      console.log('PDF enregistré:', result.filePath);
+      alert(`PDF enregistré avec succès: ${result.filePath}`);
+    } else {
+      console.error('Erreur enregistrement PDF:', result.error);
+      alert(`Erreur lors de l'enregistrement: ${result.error}`);
+    }
   }
 
   /**

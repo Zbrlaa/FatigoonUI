@@ -27,11 +27,19 @@ export class PrintComponent {
   ]);
 
   /**
-   * Prépare l'impression : passe les données du Gantt au service et navigue vers la page d'impression
+   * Prépare l'impression : convertit le Konva en image et navigue vers la page d'impression
    */
   prepareForPrint() {
-    // Passe les données du diagramme au service
-    this.printService.setGanttData(this.shows(), this.channels());
+    if (!this.ganttComponent) {
+      console.error('Composant Gantt non disponible');
+      return;
+    }
+
+    // Exporte le diagramme Konva en image Data URL
+    const imageDataUrl = this.ganttComponent.exportToImage();
+    
+    // Passe l'image au service d'impression
+    this.printService.setGanttImage(imageDataUrl);
     
     // Navigue vers la page de preview
     this.router.navigate(['/print-preview']);

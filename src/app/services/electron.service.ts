@@ -1,10 +1,23 @@
 import { Injectable } from '@angular/core';
 
 /**
+ * Interface pour une imprimante
+ */
+export interface Printer {
+  name: string;
+  displayName: string;
+  description: string;
+  status: number;
+  isDefault: boolean;
+}
+
+/**
  * Interface pour l'API Electron exposée via preload.js
  */
 interface ElectronAPI {
   printToPDF: (options: PrintOptions) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+  printSilent: (options: PrintOptions) => Promise<{ success: boolean; error?: string }>;
+  getPrinters: () => Promise<Printer[]>;
 }
 
 /**
@@ -16,6 +29,7 @@ export interface PrintOptions {
   marginsType: 0 | 1 | 2; // 0: default, 1: none, 2: minimal
   printBackground: boolean;
   printSelectionOnly: boolean;
+  printerName?: string; // Nom de l'imprimante cible
 }
 
 /**
@@ -59,6 +73,45 @@ export class ElectronService {
     } catch (error) {
       console.error('Erreur lors de l\'impression via Electron:', error);
       return { success: false, error: String(error) };
+    }
+  }
+
+  /**
+   * Envoie une requête d'impression silencieuse directe (vers imprimante)
+   * @param options Options d'impression (taille, orientation, etc.)
+   * @returns Promise avec le résultat de l'impression
+   */
+  async printSilent(options: PrintOptions): Promise<{ success: boolean; error?: string }> {
+    if (!this.isElectron()) {
+      console.warn('printSilent appelé hors d\'Electron');
+      return { success: false, error: 'Not running in Electron' };
+    }
+
+    try {
+      const result = await window.electron!.printSilent(options);
+      return result;
+    } catch (error) {
+      console.error('Erreur lors de l\'impression silencieuse:', error);
+      return { success: false, error: String(error) };
+    }
+  }
+
+  /**
+   * Récupère la liste des imprimantes disponibles
+   * @returns Promise avec la liste des imprimantes
+   */
+  async getPrinters(): Promise<Printer[]> {
+    if (!this.isElectron()) {
+      console.warn('getPrinters appelé hors d\'Electron');
+      return [];
+    }
+
+    try {
+      const printers = await window.electron!.getPrinters();
+      return printers;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des imprimantes:', error);
+      return [];
     }
   }
 }

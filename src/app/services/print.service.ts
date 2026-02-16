@@ -1,40 +1,29 @@
 import { Injectable, signal } from '@angular/core';
-import { TvShow } from '../components/gantt-tv/gantt-tv.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PrintService {
-  private shows = signal<TvShow[]>([]);
-  private channels = signal<string[]>([]);
+  private ganttImage = signal<string | null>(null);
 
   /**
-   * Définit les données du diagramme Gantt pour l'impression
+   * Définit l'image du diagramme Gantt pour l'impression
    */
-  setGanttData(shows: TvShow[], channels: string[]) {
-    this.shows.set(shows);
-    this.channels.set(channels);
+  setGanttImage(imageDataUrl: string) {
+    this.ganttImage.set(imageDataUrl);
   }
 
   /**
-   * Récupère les émissions
+   * Récupère l'image du diagramme
    */
-  getShows() {
-    return this.shows();
-  }
-
-  /**
-   * Récupère les chaînes
-   */
-  getChannels() {
-    return this.channels();
+  getGanttImage() {
+    return this.ganttImage();
   }
 
   /**
    * Réinitialise les données
    */
   clearData() {
-    this.shows.set([]);
-    this.channels.set([]);
+    this.ganttImage.set(null);
   }
 }
