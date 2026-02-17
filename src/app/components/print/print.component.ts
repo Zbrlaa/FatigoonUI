@@ -1,8 +1,11 @@
-import { Component, ViewChild, inject, signal } from '@angular/core';
+import { Component, ViewChild, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { GanttTvComponent, TvShow } from '../gantt-tv/gantt-tv.component';
 import { PrintService } from '../../services/print.service';
+import { ShortcutService } from '../../services/shortcut.service';
 
 @Component({
   selector: 'app-print',
@@ -11,11 +14,13 @@ import { PrintService } from '../../services/print.service';
   templateUrl: './print.component.html',
   styleUrls: ['./print.component.css']
 })
-export class PrintComponent {
+export class PrintComponent implements OnInit, OnDestroy {
   @ViewChild(GanttTvComponent) ganttComponent!: GanttTvComponent;
 
   private router = inject(Router);
   private printService = inject(PrintService);
+  private shortcutService = inject(ShortcutService);
+  private destroy$ = new Subject<void>();
 
   channels = signal<string[]>(['TF1', 'France 2', 'Arte', 'M6']);
   shows = signal<TvShow[]>([
@@ -26,8 +31,22 @@ export class PrintComponent {
     { channel: 'M6', name: 'Reportage', start: 20, end: 23, color: '#8e44ad' },
   ]);
 
+  ngOnInit(): void {
+    // S'abonner au raccourci Ctrl+P
+    this.shortcutService.ctrlP$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.prepareForPrint();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   /**
-   * Prépare l'impression : convertit le Konva en image et navigue vers la page d'impression
+   * Prepare l'impression : convertit le Konva en image et navigue vers la page d'impression
    */
   prepareForPrint() {
     if (!this.ganttComponent) {

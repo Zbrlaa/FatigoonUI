@@ -15,7 +15,7 @@ export class HomeComponent {
   private service = inject(FatigoonService);
   private router = inject(Router);
 
-  // Computed signals pour catégoriser les serveurs
+  // Computed signals pour categoriser les serveurs
   readonly ownedGuilds$ = computed(() => {
     const currentUser = this.store.currentUser();
     if (!currentUser) return [];

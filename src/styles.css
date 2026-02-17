@@ -41,7 +41,7 @@
     print-color-adjust: exact !important;
   }
   
-  /* Préserver les styles Tailwind à l'impression */
+  /* Preserver les styles Tailwind à l'impression */
   body {
     background-color: white !important;
   }

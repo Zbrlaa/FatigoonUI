@@ -1,17 +1,18 @@
 @media print {
-  /* Masquer les éléments ne devant pas être imprimés */
+  /* Masquer les elements ne devant pas etre imprimes */
   .toolbar-no-print,
   .settings-no-print {
     display: none !important;
   }
 
-  /* Empêche le diagramme de déborder */
+  /* Empeche le diagramme de deborder */
   #printSection {
     width: 100% !important;
     max-width: 100% !important;
     overflow: hidden !important;
     margin: 0 !important;
     box-shadow: none !important;
+    page-break-inside: avoid !important;
   }
 
   /* Adapter l'image au format d'impression */
@@ -19,12 +20,24 @@
     max-width: 100% !important;
     height: auto !important;
     page-break-inside: avoid !important;
+    display: block !important;
   }
 
   /* Assurer que le contenu ne se divise pas */
-  #printSection header,
+  #printSection header {
+    page-break-inside: avoid !important;
+  }
+
+  /* Reduire le pied de page et eviter les debordements */
   #printSection footer {
     page-break-inside: avoid !important;
+    padding: 6px 12px !important;
+    margin-top: 0 !important;
+  }
+
+  #printSection footer p {
+    margin: 0 !important;
+    font-size: 10px !important;
   }
 }
 

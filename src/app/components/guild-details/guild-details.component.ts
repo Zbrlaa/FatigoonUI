@@ -20,12 +20,12 @@ export class GuildDetailsComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
-  // Affichage du sélecteur de rôles par invitation
+  // Affichage du selecteur de rôles par invitation
   expandedInvitation = new Map<number, boolean>();
   showRoleSelector = new Map<number, boolean>();
 
   constructor() {
-    // Effect pour charger les détails du serveur quand la route change
+    // Effect pour charger les details du serveur quand la route change
     effect(() => {
       const guildId = this.route.snapshot.paramMap.get('id');
       if (guildId) {
@@ -54,7 +54,7 @@ export class GuildDetailsComponent {
   }
 
   deleteInvitation(invitationId: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette invitation ?')) {
+    if (confirm('etes-vous sûr de vouloir supprimer cette invitation ?')) {
       this.store.deleteInvitation(invitationId);
     }
   }

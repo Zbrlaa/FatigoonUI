@@ -64,7 +64,7 @@
               <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
                   <h1 class="text-3xl font-bold text-white">{{ currentGuild.name }}</h1>
-                  <span class="bg-[#5865f2] text-white text-xs font-bold px-3 py-1 rounded-full">👑 PROPRIÉTAIRE</span>
+                  <span class="bg-[#5865f2] text-white text-xs font-bold px-3 py-1 rounded-full">👑 PROPRIeTAIRE</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   <div>
@@ -72,7 +72,7 @@
                     <p class="text-sm text-[#b5bac1] font-mono bg-[#1f2124] px-3 py-2 rounded">{{ currentGuild.id }}</p>
                   </div>
                   <div>
-                    <p class="text-xs text-[#949cf7] mb-1">ID du propriétaire</p>
+                    <p class="text-xs text-[#949cf7] mb-1">ID du proprietaire</p>
                     <p class="text-sm text-[#b5bac1] font-mono bg-[#1f2124] px-3 py-2 rounded">{{ currentGuild.ownerId }}</p>
                   </div>
                 </div>
@@ -130,7 +130,7 @@
                   <div class="text-right">
                     <p class="text-xs text-[#949cf7] font-mono">ID: {{ member.id }}</p>
                     @if (member.id === currentGuild.ownerId) {
-                      <span class="text-xs bg-[#5865f2] text-white px-2 py-1 rounded mt-1 inline-block">👑 Propriétaire</span>
+                      <span class="text-xs bg-[#5865f2] text-white px-2 py-1 rounded mt-1 inline-block">👑 Proprietaire</span>
                     }
                   </div>
                 </div>
@@ -146,7 +146,7 @@
 
       <!-- Tableau des invitations -->
       <div class="mb-8">
-        <!-- Bouton Générer une invitation -->
+        <!-- Bouton Generer une invitation -->
         <div class="mb-6">
           <button
             (click)="generateInvitation()"
@@ -154,12 +154,12 @@
             class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#43b581] hover:bg-[#388c6e] disabled:bg-[#72767d] disabled:cursor-not-allowed text-white text-lg rounded-lg font-bold transition-colors shadow-lg hover:shadow-xl">
             @if (store.generatingInvitation()) {
               <div class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-              Génération en cours...
+              Generation en cours...
             } @else {
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
               </svg>
-              Générer une invitation
+              Generer une invitation
             }
           </button>
 
@@ -193,7 +193,7 @@
           <div class="bg-[#2b2d31] rounded-xl border border-[#1f2124] overflow-hidden">
             @for (invitation of store.selectedGuildInvitationsWithRoles(); track invitation.id) {
               <div class="border-b border-[#1f2124] last:border-b-0">
-                <!-- En-tête de l'invitation -->
+                <!-- En-tete de l'invitation -->
                 <div class="p-4 hover:bg-[#35373c] transition-colors">
                   <div class="flex items-center gap-4 justify-between">
                     <div class="flex-1 flex items-center gap-4">
@@ -221,13 +221,13 @@
                     </button>
                   </div>
 
-                  <!-- Détail des rôles si développé -->
+                  <!-- Detail des rôles si developpe -->
                   @if (isExpanded(invitation.id)) {
                     <div class="mt-4 pt-4 border-t border-[#1f2124]">
                       <div class="space-y-3">
                         <!-- Affichage des rôles existants -->
                         <div>
-                          <p class="text-xs text-[#949cf7] font-semibold mb-2">Rôles attribués</p>
+                          <p class="text-xs text-[#949cf7] font-semibold mb-2">Rôles attribues</p>
                           @if (invitation.roles.length > 0) {
                             <div class="flex flex-wrap gap-2">
                               @for (role of invitation.roles; track role.id) {
@@ -244,11 +244,11 @@
                               }
                             </div>
                           } @else {
-                            <p class="text-xs text-[#72767d] italic">Aucun rôle attribué</p>
+                            <p class="text-xs text-[#72767d] italic">Aucun rôle attribue</p>
                           }
                         </div>
 
-                        <!-- Sélecteur pour ajouter des rôles -->
+                        <!-- Selecteur pour ajouter des rôles -->
                         <div>
                           @if (getAvailableRolesForInvitation(invitation.id).length > 0) {
                             <button
@@ -272,7 +272,7 @@
                               </div>
                             }
                           } @else {
-                            <p class="text-xs text-[#72767d] italic">Tous les rôles sont assignés</p>
+                            <p class="text-xs text-[#72767d] italic">Tous les rôles sont assignes</p>
                           }
                         </div>
                       </div>

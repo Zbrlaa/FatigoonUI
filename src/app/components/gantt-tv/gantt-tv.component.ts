@@ -89,12 +89,19 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
     const hourCount = endHour - startHour;
     const hourWidth = (width - paddingLeft - 10) / hourCount;
 
+    // Fond blanc
+    this.layer.add(new this.KonvaRef.Rect({
+      width,
+      height,
+      fill: '#ffffff',
+    }));
+
     // Quadrillage vertical (heures)
     for (let h = startHour; h <= endHour; h++) {
       const x = paddingLeft + (h - startHour) * hourWidth;
       this.layer.add(new this.KonvaRef.Line({
         points: [x, paddingTop, x, paddingTop + channels.length * rowHeight],
-        stroke: '#36393f',
+        stroke: '#d0d0d0',
         strokeWidth: h % 6 === 0 ? 2 : 1,
       }));
       if (h < endHour) {
@@ -103,7 +110,7 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
           y: 8,
           text: `${h}h`,
           fontSize: 15,
-          fill: '#b5bac1',
+          fill: '#000000',
         }));
       }
     }
@@ -113,7 +120,7 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
       const y = paddingTop + i * rowHeight;
       this.layer.add(new this.KonvaRef.Line({
         points: [paddingLeft, y, width - 10, y],
-        stroke: '#36393f',
+        stroke: '#d0d0d0',
         strokeWidth: 1,
       }));
       if (i < channels.length) {
@@ -122,13 +129,13 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
           y: y + rowHeight / 2 - 12,
           text: channels[i],
           fontSize: 18,
-          fill: '#ffffff',
+          fill: '#000000',
           fontStyle: 'bold',
         }));
       }
     }
 
-    // Affichage émissions
+    // Affichage emissions
     for (const show of shows) {
       const channelIdx = channels.indexOf(show.channel);
       if (channelIdx === -1) continue;
@@ -153,7 +160,7 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
         y: y + 10,
         text: show.name,
         fontSize: 15,
-        fill: '#fff',
+        fill: '#000000',
         width: w - 16,
         ellipsis: true,
       }));
@@ -166,7 +173,7 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
    */
   exportToImage(): string {
     if (!this.stage) {
-      throw new Error('Stage Konva non initialisé');
+      throw new Error('Stage Konva non initialise');
     }
     return this.stage.toDataURL({ pixelRatio: 2 });
   }

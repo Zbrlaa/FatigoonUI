@@ -18,7 +18,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        Paramètres
+        Parametres
       </button>
       <button (click)="handleSavePDF()" class="flex items-center gap-2 px-5 py-2.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded font-semibold transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,11 +35,11 @@
     </div>
   </div>
 
-  <!-- Panneau de paramètres -->
+  <!-- Panneau de parametres -->
   <div class="settings-no-print overflow-hidden transition-all duration-400 bg-[#2f3136] shadow-md"
     [ngClass]="showSettings() ? 'max-h-[800px] py-8 px-6 border-b-2 border-[#202225]' : 'max-h-0'">
     
-    <!-- Sélecteur d'imprimante -->
+    <!-- Selecteur d'imprimante -->
     @if (printers().length > 0) {
       <div class="max-w-6xl mx-auto mb-6">
         <label class="flex items-center gap-2 text-gray-300 font-bold text-base mb-3">
@@ -54,7 +54,7 @@
           class="w-full px-4 py-3 bg-[#202225] text-gray-300 rounded font-medium border-2 border-[#36393f] focus:border-[#5865f2] outline-none transition-colors">
           @for (printer of printers(); track printer.name) {
             <option [value]="printer.name">
-              {{ printer.displayName || printer.name }}{{ printer.isDefault ? ' (Par défaut)' : '' }}
+              {{ printer.displayName || printer.name }}{{ printer.isDefault ? ' (Par defaut)' : '' }}
             </option>
           }
         </select>
@@ -164,7 +164,7 @@
   <!-- Contenu de la page à imprimer -->
     <div id="printSection" class="max-w-7xl mx-auto my-8 bg-white rounded overflow-hidden" 
       [ngClass]="[showBorder() ? 'shadow-xl' : '', 'page-' + pageSize().toLowerCase(), 'orientation-' + orientation()]">
-    <!-- En-tête -->
+    <!-- En-tete -->
     <header class="px-12 pt-10 print-header">
       <div class="flex justify-between items-start mb-6">
         <div class="flex-1">
@@ -205,7 +205,7 @@
     <!-- Pied de page -->
     <footer class="px-12 py-6 border-t-2 border-gray-200 bg-gray-50">
       <div class="flex justify-between items-center">
-        <p class="text-sm text-gray-600 italic">Document généré automatiquement</p>
+        <p class="text-sm text-gray-600 italic">Document genere automatiquement</p>
         <p class="text-sm text-gray-800 font-semibold">{{currentDate}}</p>
       </div>
     </footer>

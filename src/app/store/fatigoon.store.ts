@@ -63,7 +63,7 @@ export const FatigoonStore = signalStore(
           service.getUserByUsername(username).pipe(
 
             switchMap(user => {
-              // Dédupliquer les IDs car l'owner peut être dans la liste des membres
+              // Dedupliquer les IDs car l'owner peut etre dans la liste des membres
               const allIds = [...new Set([
                 ...(user.guildIds ?? []),
                 ...(user.ownedGuildIds ?? []),
@@ -110,7 +110,7 @@ export const FatigoonStore = signalStore(
         switchMap(guildId =>
           service.getGuildById(guildId).pipe(
             switchMap(guild => {
-              // Charger les membres, invitations et rôles en parallèle
+              // Charger les membres, invitations et rôles en parallele
               return forkJoin({
                 members: guild.userIds.length > 0
                   ? forkJoin(guild.userIds.map(id => service.getUserById(id)))
@@ -144,7 +144,7 @@ export const FatigoonStore = signalStore(
               error: (err) => {
                 console.error(err);
                 patchState(store, {
-                  selectedGuildError: 'Erreur lors du chargement des détails du serveur',
+                  selectedGuildError: 'Erreur lors du chargement des details du serveur',
                   selectedGuildLoading: false,
                 });
               },
@@ -250,7 +250,7 @@ export const FatigoonStore = signalStore(
               error: (err) => {
                 console.error(err);
                 patchState(store, {
-                  generateInvitationError: 'Erreur lors de la génération de l\'invitation',
+                  generateInvitationError: 'Erreur lors de la generation de l\'invitation',
                   generatingInvitation: false,
                 });
               },

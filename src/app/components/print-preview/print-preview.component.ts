@@ -1,8 +1,11 @@
 import { Component, inject, signal, OnInit, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { PrintService } from '../../services/print.service';
 import { ElectronService, Printer } from '../../services/electron.service';
+import { ShortcutService } from '../../services/shortcut.service';
 
 export type PageOrientation = 'portrait' | 'landscape';
 export type PageSize = 'A4' | 'A3';
@@ -19,6 +22,8 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private printService = inject(PrintService);
   private electronService = inject(ElectronService);
+  private shortcutService = inject(ShortcutService);
+  private destroy$ = new Subject<void>();
 
   ganttImage = signal<string | null>(null);
   printers = signal<Printer[]>([]);
@@ -38,7 +43,7 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
-    // Mettre à jour le style @page quand les paramètres changent
+    // Mettre à jour le style @page quand les parametres changent
     effect(() => {
       this.updatePrintStyle();
     });
@@ -55,6 +60,13 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
     this.ganttImage.set(image);
     this.updatePrintStyle();
     
+
+    // S'abonner au raccourci Ctrl+P
+    this.shortcutService.ctrlP$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.handleSavePDF();
+      });
     // Charger les imprimantes disponibles
     this.loadPrinters();
   }
@@ -70,7 +82,7 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
     const printers = await this.electronService.getPrinters();
     this.printers.set(printers);
     
-    // Sélectionner l'imprimante par défaut
+    // Selectionner l'imprimante par defaut
     const defaultPrinter = printers.find(p => p.isDefault);
     if (defaultPrinter) {
       this.selectedPrinter.set(defaultPrinter.name);
@@ -81,6 +93,8 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.printService.clearData();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -103,14 +117,14 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
       @media print {
         @page {
           size: ${size} ${orientation};
-          margin: 1cm;
+          margin: 1cm 1cm 1.5cm 1cm;
         }
       }
     `;
   }
 
   /**
-   * Retourne la semaine actuelle formatée
+   * Retourne la semaine actuelle formatee
    */
   getCurrentWeek(): string {
     const now = new Date();
@@ -122,7 +136,7 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Bascule l'affichage des paramètres
+   * Bascule l'affichage des parametres
    */
   toggleSettings() {
     this.showSettings.set(!this.showSettings());
@@ -164,7 +178,7 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gère l'impression via Electron uniquement
+   * Gere l'impression via Electron uniquement
    */
   async handlePrint() {
     if (!this.electronService.isElectron()) {
@@ -173,11 +187,11 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
     }
 
     if (!this.selectedPrinter()) {
-      alert('Veuillez sélectionner une imprimante');
+      alert('Veuillez selectionner une imprimante');
       return;
     }
 
-    // Masquer les boutons de paramètres avant l'impression
+    // Masquer les boutons de parametres avant l'impression
     const toolbar = document.querySelector('.toolbar-no-print');
     const settingsPanel = document.querySelector('.settings-no-print');
     
@@ -197,13 +211,13 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
       printerName: this.selectedPrinter()!
     });
 
-    // Réafficher les boutons
+    // Reafficher les boutons
     if (toolbar) (toolbar as HTMLElement).style.display = '';
     if (settingsPanel) (settingsPanel as HTMLElement).style.display = '';
 
     if (result.success) {
-      console.log('Impression réussie');
-      alert('Impression lancée avec succès !');
+      console.log('Impression reussie');
+      alert('Impression lancee avec succes !');
     } else {
       console.error('Erreur impression:', result.error);
       alert(`Erreur lors de l'impression: ${result.error}`);
@@ -219,7 +233,7 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Masquer les boutons de paramètres avant l'impression
+    // Masquer les boutons de parametres avant l'impression
     const toolbar = document.querySelector('.toolbar-no-print');
     const settingsPanel = document.querySelector('.settings-no-print');
     
@@ -238,13 +252,13 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
       printSelectionOnly: false
     });
 
-    // Réafficher les boutons
+    // Reafficher les boutons
     if (toolbar) (toolbar as HTMLElement).style.display = '';
     if (settingsPanel) (settingsPanel as HTMLElement).style.display = '';
 
     if (result.success && result.filePath) {
-      console.log('PDF enregistré:', result.filePath);
-      alert(`PDF enregistré avec succès: ${result.filePath}`);
+      console.log('PDF enregistre:', result.filePath);
+      alert(`PDF enregistre avec succes: ${result.filePath}`);
     } else {
       console.error('Erreur enregistrement PDF:', result.error);
       alert(`Erreur lors de l'enregistrement: ${result.error}`);
@@ -252,7 +266,7 @@ export class PrintPreviewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Retour à la page d'édition
+   * Retour à la page d'edition
    */
   goBack() {
     this.printService.clearData();
