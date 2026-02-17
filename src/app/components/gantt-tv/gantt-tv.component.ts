@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, input, effect } from '@angular/core';
+import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, input, effect } from '@angular/core';
 
 export interface TvShow {
   channel: string;
@@ -17,7 +17,7 @@ export interface TvShow {
 export class GanttTvComponent implements AfterViewInit, OnDestroy {
   shows = input<TvShow[]>([]);
   channels = input<string[]>([]);
-  @ViewChild('ganttContainer', { static: false }) container!: ElementRef<HTMLDivElement>;
+  container = viewChild.required<ElementRef<HTMLDivElement>>('ganttContainer');
 
   private stage: any = null;
   private layer: any = null;
@@ -45,11 +45,11 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
   }
 
   private initStage() {
-    const rect = this.container.nativeElement.getBoundingClientRect();
+    const rect = this.container().nativeElement.getBoundingClientRect();
     const width = Math.max(600, Math.round(rect.width));
     const height = Math.max(300, Math.round(rect.height || 400));
     this.stage = new this.KonvaRef.Stage({
-      container: this.container.nativeElement,
+      container: this.container().nativeElement,
       width,
       height,
     });
@@ -60,7 +60,7 @@ export class GanttTvComponent implements AfterViewInit, OnDestroy {
 
   private onResize() {
     if (!this.stage || !this.KonvaRef) return;
-    const rect = this.container.nativeElement.getBoundingClientRect();
+    const rect = this.container().nativeElement.getBoundingClientRect();
     const w = Math.max(600, Math.round(rect.width));
     const h = Math.max(300, Math.round(rect.height || 400));
     this.stage.width(w);

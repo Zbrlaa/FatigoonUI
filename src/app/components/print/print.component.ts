@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, viewChild, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -15,7 +15,7 @@ import { ShortcutService } from '../../services/shortcut.service';
   styleUrls: ['./print.component.css']
 })
 export class PrintComponent implements OnInit, OnDestroy {
-  @ViewChild(GanttTvComponent) ganttComponent!: GanttTvComponent;
+  ganttComponent = viewChild.required<GanttTvComponent>(GanttTvComponent);
 
   private router = inject(Router);
   private printService = inject(PrintService);
@@ -49,13 +49,13 @@ export class PrintComponent implements OnInit, OnDestroy {
    * Prepare l'impression : convertit le Konva en image et navigue vers la page d'impression
    */
   prepareForPrint() {
-    if (!this.ganttComponent) {
+    if (!this.ganttComponent()) {
       console.error('Composant Gantt non disponible');
       return;
     }
 
     // Exporte le diagramme Konva en image Data URL
-    const imageDataUrl = this.ganttComponent.exportToImage();
+    const imageDataUrl = this.ganttComponent().exportToImage();
     
     // Passe l'image au service d'impression
     this.printService.setGanttImage(imageDataUrl);
